@@ -7,6 +7,7 @@ skillslim is a Python CLI (`init`, `lint`, `compare`) and a bundled progressive-
 - `src/skillslim/cli.py`: commands, discovery, template generation, exit codes.
 - `src/skillslim/lint.py`: heuristic checks, Markdown links, size estimates.
 - `src/skillslim/template/`: packaged starter and its references/examples.
+- `scripts/install-skill.sh` and `scripts/install-skill.ps1`: copy a skill directory into a host path without double nesting. There is no root `SKILL.md`; the skill users copy is `src/skillslim/template/`.
 - `examples/release-notes/`: complete standalone example skill.
 - `tests/test_skillslim.py`: standard-library unittest suite.
 - `pyproject.toml`: package metadata, entrypoint, bundled resources.
@@ -15,16 +16,21 @@ skillslim is a Python CLI (`init`, `lint`, `compare`) and a bundled progressive-
 
 ## Setup and checks
 
-Requires Python 3.11+. Run from this directory:
+Requires Python 3.11+. Run from this directory.
+
+macOS or Linux (`python3` must be 3.11 or newer):
 
 ```sh
-python -m venv .venv
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
 ```
 
-Activate with `.venv\Scripts\Activate.ps1` in PowerShell or `source .venv/bin/activate` in Bash, then:
+Windows PowerShell is second. Create the environment with Python 3.11, then activate `.venv\Scripts\Activate.ps1`.
+
+Then:
 
 ```sh
-python -m pip install -e .
 python -m unittest discover -s tests -v
 skillslim lint examples --recursive --strict
 skillslim lint src/skillslim/template --strict

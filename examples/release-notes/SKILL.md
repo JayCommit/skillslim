@@ -12,3 +12,5 @@ For ordinary releases, return a concise Markdown entry using these rules alone.
 
 - When an upgrade requires user action, read [migration guidance](references/migrations.md).
 - When choosing the level of detail, read [sample entries](examples/entries.md).
+
+This folder is the skill to install for Grok, Grok Bot, Cursor, OpenAI, Antigravity, and Claude.

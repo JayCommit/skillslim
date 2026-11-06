@@ -6,10 +6,27 @@ Requires Python 3.11+. No runtime dependencies, services, or parent-repository f
 
 ## Install and run
 
-From the repository root, preferably in an activated virtual environment:
+Requires Python 3.11 or newer. No runtime dependencies. Source install only; this package is not published to PyPI. `python3` in the macOS and Linux steps must be 3.11 or newer.
+
+macOS or Linux, from the repository root:
 
 ```sh
-python -m pip install .
+python3 -m venv .venv
+source .venv/bin/activate
+pip install .
+```
+
+Windows PowerShell is second. Create the virtual environment with Python 3.11, then activate the `Scripts` directory:
+
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install .
+```
+
+These are documented commands. The GitHub Actions workflow runs on Linux and Windows; that is not a claim that a maintainer ran the macOS or Windows install locally.
+
+```sh
 skillslim lint examples --recursive --strict
 skillslim init my-skill
 skillslim lint my-skill
@@ -26,9 +43,36 @@ my-skill/
   examples/update.md
 ```
 
-Copy the entire generated folder to your agent's skill location; it needs no skillslim installation. Discovery and invocation depend on the agent. No cross-agent behavior is established here.
+There is no root `SKILL.md` in this repository. Do not add one that duplicates the CLI. The skill users copy is the packaged template at `src/skillslim/template/`. `skillslim init` writes that template and replaces `{{name}}`. `examples/release-notes/` is another complete skill, not the CLI. Copy the skill directory itself so the destination contains `SKILL.md` directly; do not nest an extra folder of the same name. The copied folder needs no skillslim installation.
 
-The starter lives in `src/skillslim/template/`; `examples/release-notes/` is another complete skill. Handle the common case from `SKILL.md` alone. Use relative Markdown links saying when to read each guide. Short skills do not need extra folders.
+Handle the common case from `SKILL.md` alone. Use relative Markdown links saying when to read each guide. Short skills do not need extra folders.
+
+## Host skill paths
+
+Install locations below are file paths and invocation names. They do not establish that every host was exercised or that behavior matches across hosts. `<name>` is the skill folder name. Cursor's frontmatter `name` must match that folder. Antigravity requires a non-empty `description`.
+
+| Host | Project | User | How to invoke |
+| --- | --- | --- | --- |
+| Grok | `.grok/skills/<name>/` | `~/.grok/skills/<name>/` | `/<name>` |
+| Grok Bot | (same user path) | `~/.grok/skills/<name>/` on the bot computer, plus a paste-in prompt | Same `SKILL.md` |
+| Cursor | `.cursor/skills/<name>/` | `~/.cursor/skills/<name>/` | `/<name>`; name matches folder |
+| OpenAI / ChatGPT app | `.agents/skills/<name>/` | `~/.agents/skills/<name>/` | Zip upload via Plugins → Skills → Add. Codex `$<name>` |
+| Antigravity | `.agents/skills/<name>/` (one level) | `~/.gemini/config/skills/<name>/`; CLI `~/.gemini/antigravity-cli/skills/<name>/` | `description` required |
+| Claude | `.claude/skills/<name>/` | `~/.claude/skills/<name>/` | `/<name>` |
+
+macOS or Linux, from any working directory (project scope uses the current directory):
+
+```sh
+bash scripts/install-skill.sh --host cursor --scope project --name my-skill
+```
+
+Windows PowerShell is second:
+
+```powershell
+powershell -File scripts\install-skill.ps1 --host cursor --scope project --name my-skill
+```
+
+`scripts/install-skill.sh` and `scripts/install-skill.ps1` take an optional skill directory. If omitted, they use the packaged template only when that directory contains `SKILL.md`. `--host` is `grok`, `grok-bot`, `cursor`, `openai`, `antigravity`, `claude`, or `all`. `--scope` is `project` (default) or `user`. `--name` sets the folder name and replaces `{{name}}`. Grok Bot always copies to `~/.grok/skills/<name>/` and prints a paste-in prompt of the same `SKILL.md`. Antigravity user scope copies to both the `~/.gemini/config/skills/<name>/` path and the CLI path. The destination skill folder is replaced; its contents are not placed inside another `<name>` directory.
 
 ## Checks and exit codes
 
@@ -66,10 +110,17 @@ No hosting, marketplace, automatic rewriting, model calls, telemetry, or agent-s
 
 ## Development
 
+macOS or Linux:
+
 ```sh
-python -m pip install -e .
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
 python -m unittest discover -s tests -v
 skillslim lint examples --recursive --strict
+skillslim lint src/skillslim/template --strict
 ```
+
+Windows PowerShell is second: activate `.venv\Scripts\Activate.ps1`, then run the same `pip`, `unittest`, and `skillslim` commands.
 
 The GitHub Actions workflow is configured for Python 3.11 and 3.13 on Linux and Windows, with this folder as the repository root. It installs the package, runs tests, and lints the example. Configured CI coverage is not a claim that every platform has been verified locally.
