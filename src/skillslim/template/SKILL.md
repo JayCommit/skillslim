@@ -13,3 +13,5 @@ Handle ordinary updates with these rules alone. Read only the guide relevant to 
 
 - For conflicting reports or missing evidence, read [evidence guidance](references/evidence.md).
 - For a worked before/after update, read [the example](examples/update.md).
+
+This folder is the skill to install for Grok, Grok Bot, Cursor, OpenAI, Antigravity, and Claude.
